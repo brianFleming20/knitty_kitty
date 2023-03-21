@@ -96,10 +96,10 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
-    print(date)
+    now = date.today().strftime("%A %d %B %Y")
     # posts = KittyPost.query.all()
     # data = request.form.get('ckeditor')
-    return render_template("index.html")
+    return render_template("index.html", date=now)
 
 
 @app.route("/about")
@@ -110,6 +110,11 @@ def elements():
 @app.route("/ordering")
 def generic():
     return render_template("ordering.html")
+
+
+@app.route("/add-post")
+def add_new_item():
+    return render_template("")
 
 
 if __name__ == "__main__":
