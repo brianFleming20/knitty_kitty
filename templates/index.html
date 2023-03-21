@@ -6,7 +6,6 @@
 				<img src="static/images/background1a.png" style="position: absolute; z-index: -1; padding: 35px 70px 50px; width: 100%;">
 				<!-- Intro -->
 					<div id="intro">
-<!--						<img src="static/images/background1a.png" style="position: absolute; z-index: -1;">-->
 						<h1>Knitty Kitty<br />
 						Creations</h1>
 						<p>Giving wool the needle</p>
@@ -82,7 +81,9 @@
 								</article>
 
 							</section>
-
+<!--						{% if current_user.id == 1: %}-->
+<!--          				<a class="btn btn-primary float-right" href="{{url_for('add_new_post')}}">Create New Post</a>-->
+<!--          				{% endif %}-->
 						<!-- Footer -->
 							<footer>
 								<div class="pagination">
