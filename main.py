@@ -114,7 +114,7 @@ def generic():
 
 @app.route("/add-post")
 def add_new_item():
-    return render_template("")
+    return render_template("add-post.html")
 
 
 if __name__ == "__main__":
