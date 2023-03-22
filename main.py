@@ -49,19 +49,31 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(250), nullable=False)
     password = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(250), unique=True, nullable=False)
-    posts = relationship("KittyItem", back_populates="author")
+    item = relationship("KittyItem", back_populates="title")
+    comment = relationship("Comments", back_populates="comment_author")
 
 
 class KittyItem(db.Model):
     __tablename__ = "kitty_item"
     id = db.Column(db.Integer, primary_key=True)
     # Foreign Key to link to the user's post
-    author_id = db.Column(db.Integer, db.ForeignKey("Users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("Users.id"))
     title = db.Column(db.String(250), unique=True, nullable=False)
     description = db.Column(db.String(250), nullable=False)
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
+    comment = relationship("Comments", back_populates="parent_post")
+
+
+class Comments(db.Model):
+    __tablename__ = "comments"
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey("Users.id"))
+    post_id = db.Column(db.Integer, db.ForeignKey("kitty_item.id"))
+    comment_author = relationship("User", back_populates="comment")
+    parent_post = relationship("KittyItem", back_populates="comment")
 
 
 class Address(db.Model):
@@ -127,9 +139,10 @@ def load_user(user_id):
 @app.route("/")
 def home():
     now = date.today().strftime("%A %d %B %Y")
-    # posts = KittyPost.query.all()
-    # data = request.form.get('ckeditor')
-    return render_template("index.html", date=now)
+    posts = KittyItem.query.all()
+    print(posts)
+    data = request.form.get('ckeditor')
+    return render_template("index.html", date=now, all_posts=posts)
 
 
 @app.route("/about")
@@ -142,9 +155,15 @@ def generic():
     return render_template("ordering.html")
 
 
-@app.route("/add-post")
+@app.route("/add-item")
 def add_new_item():
-    return render_template("add-post.html")
+    form = CreateItemForm()
+    return render_template("add-post.html", form=form, is_edit=False)
+
+
+@app.route("/edit-item")
+def edit_item():
+    return render_template("add-post.html", is_edit=True)
 
 
 @app.route("/basket")

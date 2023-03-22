@@ -1,4 +1,7 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
 
+{% block content %}
 {% include "header.html" %}
 		<!-- Wrapper -->
 			<div id="wrapper">
@@ -27,16 +30,29 @@
 						<!-- Post -->
 							<section class="post">
 								<header class="major">
-									<h2>Add New Item</h2>
+									{% if is_edit: %}
+									<h1>Edit Item</h1>
+									{% else: %}
+									<h1>New Item</h1>
+									{% endif %}
+								<div class="container">
+									<div class="row">
+									  <div class="col-lg-8 col-md-10 mx-auto">
+										{{ ckeditor.load() }}
+										{{ ckeditor.config(name='body') }}
+										{{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+									  </div>
+									</div>
+								</div>
 								</header>
 
 
 							</section>
-
+			{% endblock %}
 					</div>
 				<!-- Copyright -->
 					<div id="copyright">
-						<ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+						<ul><li>&copy; Knitty-Kitty Creations</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
 					</div>
 
 			</div>
