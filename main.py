@@ -6,6 +6,7 @@ from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, URL
@@ -49,6 +50,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(250), nullable=False)
     password = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(250), unique=True, nullable=False)
+    address_id = db.Column(db.Integer, db.ForeignKey("Address.id"))
     item = relationship("KittyItem", back_populates="title")
     comment = relationship("Comments", back_populates="comment_author")
 
@@ -60,7 +62,7 @@ class KittyItem(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("Users.id"))
     title = db.Column(db.String(250), unique=True, nullable=False)
     description = db.Column(db.String(250), nullable=False)
-    date = db.Column(db.String(250), nullable=False)
+    date = db.Column(db.String(50), nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
     comment = relationship("Comments", back_populates="parent_post")
@@ -84,16 +86,23 @@ class Address(db.Model):
     address3 = db.Column(db.String(100), nullable=False)
     post_code = db.Column(db.String(50), nullable=False)
     country = db.Column(db.String(50), nullable=False)
-    user = db.Column(db.Integer, db.ForeignKey("User.id"))
+    user = relationship("User", back_populates="name")
 
 
 class boughtBy(db.Model):
     __tablename__ = "sales"
     id = db.Column(db.Integer, primary_key=True)
-    user = relationship("User", back_populates='name')
-    email = relationship("User", back_populates='email')
+    user_id = db.Column(db.Integer, db.ForeignKey("Users.id"))
+    email = relationship("User", back_populates="email")
     item = relationship("KittyItem", back_populates='title')
     date = db.Column(db.String(50), nullable=False)
+
+
+class basket(db.Model):
+    __tablename__ = "basket"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("Users.id"))
+    items = db.Column(db.Integer, db.ForeignKey("kitty_item.id"))
 
 
 # db.create_all()
@@ -139,10 +148,10 @@ def load_user(user_id):
 @app.route("/")
 def home():
     now = date.today().strftime("%A %d %B %Y")
-    posts = KittyItem.query.all()
+    posts = KittyItem
     print(posts)
     data = request.form.get('ckeditor')
-    return render_template("index.html", date=now, all_posts=posts)
+    return render_template("index.html", date=now)
 
 
 @app.route("/about")
